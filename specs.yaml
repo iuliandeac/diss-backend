@@ -1,0 +1,777 @@
+openapi: 3.0.0
+info:
+  title: MentorMind API
+  version: 1.0.0
+  description: API for MentorMind
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local hosted MentorMind server
+
+paths:
+  /account/save:
+    post:
+      summary: Save an account
+      description: If no id is passed create a new account, otherwise update already existing account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccount'
+      responses:
+        '200':
+          description: The account was saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '500':
+          description: Internal server error
+      tags:
+        - UserAccount
+  /account/delete/{userAccountId}:
+    delete:
+      summary: Delete an account
+      description: Remove from the database the account with the given id
+      parameters:
+        - in: path
+          name: userAccountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the user to delete
+      responses:
+        '200':
+          description: The account was deleted
+        '500':
+          description: Internal server error
+      tags:
+        - UserAccount
+  /account/all:
+    get:
+      summary: Get all accounts
+      description: Returns a collection of all accounts
+      responses:
+        '200':
+          description: A list of accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAccount'
+        '500':
+          description: Internal server error
+      tags:
+        - UserAccount
+  /account/{userAccountId}:
+    get:
+      summary: Get one account
+      description: Returns the information for the given user account id
+      parameters:
+        - in: path
+          name: userAccountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the user to get
+      responses:
+        '200':
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '500':
+          description: Internal server error
+      tags:
+        - UserAccount
+  /account/login/{email}/{password}:
+    get:
+      summary: Get one account
+      description: Returns the information for the given user account id
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Email of the user to get
+        - in: path
+          name: password
+          schema:
+            type: string
+          required: true
+          description: Password of the user to get
+      responses:
+        '200':
+          description: The account was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '500':
+          description: Internal server error
+      tags:
+        - UserAccount
+  /subject/save:
+    post:
+      summary: Save a subject
+      description: If no id is passed create a new subject, otherwise update already existing subject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+      responses:
+        '200':
+          description: The subject was saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/delete/{subjectId}:
+    delete:
+      summary: Delete a subject
+      description: Remove from the database the subject with the given id
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject to delete
+      responses:
+        '200':
+          description: The subject was deleted
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/all:
+    get:
+      summary: Get all subjects
+      description: Returns a collection of all subjects.
+      responses:
+        '200':
+          description: A list of subjects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/foraccount/{accountId}:
+    get:
+      summary: Get all subjects for one account
+      description: Returns the information for the given account id, if teacher the subjects that they teach, for student the subjects that they attend
+      parameters:
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the user to get subjects for
+      responses:
+        '200':
+          description: The subjects were retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subject'
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/{subjectId}:
+    get:
+      summary: Get one subject
+      description: Returns the information for the given subject id
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject to get
+      responses:
+        '200':
+          description: The subject was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/{subjectId}/enroll/{accountId}:
+    post:
+      summary: Enroll a student 
+      description: Enrolls a student to a specific subject
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Student was enrolled
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/{joinCode}/join/{accountId}:
+    post:
+      summary: Enroll a student 
+      description: Enrolls a student to a specific subject
+      parameters:
+        - in: path
+          name: joinCode
+          schema:
+            type: string
+          required: true
+          description: Join code of the subject
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Student was enrolled
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /subject/{subjectId}/remove/{accountId}:
+    delete:
+      summary: Remove a student 
+      description: Removes a student from a specific subject
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Student was removed
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
+  /lecture/save/{subjectId}:
+    post:
+      summary: Save a lecture
+      description: If no id is passed create a new lecture, otherwise update already existing lecture
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject to get lectures for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lecture'
+      responses:
+        '200':
+          description: The lecture was saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lecture'
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /lecture/delete/{lectureId}:
+    delete:
+      summary: Delete a lecture
+      description: Remove from the database the lecture with the given id
+      parameters:
+        - in: path
+          name: lectureId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the lecture to delete
+      responses:
+        '200':
+          description: The lecture was deleted
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /lecture/all:
+    get:
+      summary: Get all lectures
+      description: Returns a collection of all lectures.
+      responses:
+        '200':
+          description: A list of lectures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lecture'
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /lecture/{lectureId}:
+    get:
+      summary: Get one lecture
+      description: Returns the information for the given lecture id
+      parameters:
+        - in: path
+          name: lectureId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the lecture to get
+      responses:
+        '200':
+          description: The lecture was retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lecture'
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /lecture/fromsubject/{subjectId}:
+    get:
+      summary: Get all lectures for a subject
+      description: Returns the information for the given subject id
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject to get lectures for
+      responses:
+        '200':
+          description: The lecture was retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lecture'
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /material/{lectureId}:
+    get:
+      summary: Get all materials from a lecture
+      description: Returns the information for the given lecture id
+      parameters:
+        - in: path
+          name: lectureId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the lecture to get
+      responses:
+        '200':
+          description: The materials were retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Material'
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+  /material/save/{lectureId}:
+    post:
+      summary: Save a material
+      description: If no id is passed create a new material, otherwise update already existing material
+      parameters:
+        - in: path
+          name: lectureId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the lecture to get
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Material'
+      responses:
+        '200':
+          description: The material was saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+  /material/delete/{materialId}:
+    delete:
+      summary: Delete a material
+      description: Remove from the database the material with the given id
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material to delete
+      responses:
+        '200':
+          description: The material was deleted
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+  /comment/{materialId}:
+    get:
+      summary: Get all comments from a material
+      description: Returns the information for the given material id
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material to get comments for
+      responses:
+        '200':
+          description: The comments were retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '500':
+          description: Internal server error
+      tags:
+        - Comment
+  /comment/save/{materialId}:
+    post:
+      summary: Save a comment
+      description: If no id is passed create a new comment, otherwise update already existing comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material to get comments for
+      responses:
+        '200':
+          description: The material was saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '500':
+          description: Internal server error
+      tags:
+        - Comment
+  /comment/delete/{commentId}:
+    delete:
+      summary: Delete a comment
+      description: Remove from the database the comment with the given id
+      parameters:
+        - in: path
+          name: commentId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the comment to delete
+      responses:
+        '200':
+          description: The comment was deleted
+        '500':
+          description: Internal server error
+      tags:
+        - Comment
+  /material/{materialId}/accept/{accountId}:
+    post:
+      summary: Accept a material 
+      description: Accepts a material if accountId is the teacher of the subject
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Material was approved
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+  /material/{materialId}/reject/{accountId}:
+    delete:
+      summary: Rejects a material 
+      description: Rejects a material if accountId is the teacher of the subject
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Material was rejected
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+  /material/{materialId}/done/{accountId}:
+    post:
+      summary: Mark as done
+      description: Marks a material as done for student with given id
+      parameters:
+        - in: path
+          name: materialId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the material
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Material was marked as done
+        '500':
+          description: Internal server error
+      tags:
+        - Material
+components:
+  schemas:
+    UserAccount:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the account
+        email:
+          type: string
+          format: email
+          description: The email of the account
+        firstName:
+          type: string
+          description: The first name of the user
+        lastName:
+          type: string
+          description: The last name of the user
+        role:
+          type: string
+          description: The role of the account
+        password:
+          type: string
+          description: The password of the account
+    Subject:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the subject
+        name:
+          type: string
+          description: The name of the subject
+        icon:
+          type: string
+          description: The value of the icon (to determine which icon is shown in the frontend)
+        joinCode:
+          type: string
+          description: The autogenerated value to join a course
+        isApprovalNeeded:
+          type: boolean
+          description: Is a student required approval before material upload is displayed for other students / teacher
+        teacher:
+          $ref: '#/components/schemas/UserAccount'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAccount'
+        lectures:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lecture'
+    Lecture:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the lecture
+        name:
+          type: string
+          description: The name of the lecture
+        icon:
+          type: string
+          description: The value of the icon (to determine which icon is shown in the frontend)
+        author:
+          $ref: '#/components/schemas/UserAccount'
+        materials:
+          type: array
+          items:
+            $ref: '#/components/schemas/Material'
+    Material:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the material
+        name:
+          type: string
+          description: The name of the material
+        author:
+          $ref: '#/components/schemas/UserAccount'
+        size:
+          type: string
+          description: The size of the material
+        description:
+          type: string
+          description: The description of the material
+        isAccepted:
+          type: boolean
+          description: Is the material approved by someone or not (automatically approved if course does not require approval)
+        timestamp:
+          type: integer
+          format: int64
+          description: The system time when the file was last modified
+        type:
+          enum: [text, pdf, video, jpeg]
+          description: The type of material
+    Comment:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of the comment
+        author:
+          $ref: '#/components/schemas/UserAccount'
+        replyTo:
+          $ref: '#/components/schemas/Comment'
+        content:
+          type: string
+          description: The message of the comment
+        material:
+          $ref: '#/components/schemas/Material'
+        timestamp:
+          type: integer
+          format: int64
+          description: The system time when the comment was added
+        anchor:
+          type: integer
+          format: int64
+          description: The system time when the comment was added in case of video file, page number otherwise
+          
+          
+          
+          
+          
+          
+          
+          
+          
