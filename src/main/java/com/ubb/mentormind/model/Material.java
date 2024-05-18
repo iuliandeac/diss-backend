@@ -24,10 +24,5 @@ public class Material {
     @GeneratedValue
     private Long id;
 
-    enum type {
-        text,
-        pdf,
-        video,
-        jpeg
-    }
+    String type;
 }
