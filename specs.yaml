@@ -248,6 +248,36 @@ paths:
           description: Internal server error
       tags:
         - Subject
+  /subject/{subjectId}/progress/{accountId}:
+    get:
+      summary: Progress of a student 
+      description: Progress of a student at a subject
+      parameters:
+        - in: path
+          name: subjectId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the subject
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Progress was retrieved
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+      tags:
+        - Subject
   /subject/{joinCode}/join/{accountId}:
     post:
       summary: Enroll a student 
@@ -408,6 +438,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Lecture'
+        '500':
+          description: Internal server error
+      tags:
+        - Lecture
+  /lecture/{lectureId}/progress/{accountId}:
+    get:
+      summary: Progress of a student 
+      description: Progress of a student at a lecture
+      parameters:
+        - in: path
+          name: lectureId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the lecture
+        - in: path
+          name: accountId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric id of the account
+      responses:
+        '200':
+          description: Progress was retrieved
+          content:
+            text/plain:
+              schema:
+                type: string
         '500':
           description: Internal server error
       tags:
@@ -756,8 +816,6 @@ components:
         content:
           type: string
           description: The message of the comment
-        material:
-          $ref: '#/components/schemas/Material'
         timestamp:
           type: integer
           format: int64
@@ -766,12 +824,3 @@ components:
           type: integer
           format: int64
           description: The system time when the comment was added in case of video file, page number otherwise
-          
-          
-          
-          
-          
-          
-          
-          
-          

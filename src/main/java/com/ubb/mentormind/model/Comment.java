@@ -6,20 +6,15 @@ import lombok.Data;
 @Data
 @Entity
 public class Comment {
+    @ManyToOne
+    @JoinColumn(name = "author")
+    UserAccount author;
+    @OneToOne
+    Comment replyTo;
+    String content;
+    Long timestamp = System.currentTimeMillis();
+    Long anchor;
     @Id
     @GeneratedValue
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name="author")
-    UserAccount author;
-
-    @OneToOne
-    Comment replyTo;
-
-    String content;
-
-    Long timestamp = System.currentTimeMillis();
-
-    Long anchor;
 }

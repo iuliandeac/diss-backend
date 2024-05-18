@@ -9,18 +9,13 @@ import lombok.Data;
 @Data
 @Entity
 public class UserAccount {
+    @Column(unique = true)
+    String email;
+    String firstName;
+    String lastName;
+    String role;
+    String password;
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column(unique = true)
-    String email;
-
-    String firstName;
-
-    String lastName;
-
-    String role;
-
-    String password;
 }

@@ -1,7 +1,11 @@
 package com.ubb.mentormind.controller;
 
+import com.ubb.mentormind.model.Lecture;
+import com.ubb.mentormind.model.Material;
 import com.ubb.mentormind.model.Subject;
 import com.ubb.mentormind.model.UserAccount;
+import com.ubb.mentormind.repository.LectureRepository;
+import com.ubb.mentormind.repository.MaterialRepository;
 import com.ubb.mentormind.repository.SubjectRepository;
 import com.ubb.mentormind.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +19,13 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class SubjectController {
     @Autowired
-    SubjectRepository subjectRepository;
-
-    @Autowired
     UserAccountRepository userAccountRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
+    @Autowired
+    LectureRepository lectureRepository;
+    @Autowired
+    MaterialRepository materialRepository;
 
     @GetMapping("/all")
     public Collection<Subject> findSubjects() {
@@ -33,6 +40,32 @@ public class SubjectController {
     @GetMapping("/{subjectId}")
     public Subject findSubject(@PathVariable Long subjectId) {
         return subjectRepository.findById(subjectId).orElse(null);
+    }
+
+    @GetMapping("/{subjectId}/progress/{accountId}")
+    public String findProgress(@PathVariable Long subjectId, @PathVariable Long accountId) {
+        Optional<Subject> subjectOptional = subjectRepository.findById(subjectId);
+        Optional<UserAccount> accountOptional = userAccountRepository.findById(accountId);
+        int total = 0;
+        int done = 0;
+        if (subjectOptional.isPresent() && accountOptional.isPresent()) {
+            Subject subject = subjectOptional.get();
+            UserAccount account = accountOptional.get();
+            for (Lecture l : subject.getLectures()) {
+                for (Material m : l.getMaterials()) {
+                    if (m.getCompletedBy().contains(account)) {
+                        total += 1;
+                        done += 1;
+                    } else {
+                        total += 1;
+                    }
+                }
+            }
+        }
+        if (total != 0) {
+            return String.valueOf(done * 100 / total);
+        }
+        return "0";
     }
 
     @PostMapping("/save")
@@ -96,7 +129,7 @@ public class SubjectController {
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-        while (subjectRepository.findAll().stream().map(Subject::getJoinCode).collect(Collectors.toSet()).contains(generatedString)){
+        while (subjectRepository.findAll().stream().map(Subject::getJoinCode).collect(Collectors.toSet()).contains(generatedString)) {
             generatedString = random.ints(leftLimit, rightLimit + 1)
                     .limit(targetStringLength)
                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)

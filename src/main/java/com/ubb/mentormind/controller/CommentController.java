@@ -32,7 +32,7 @@ public class CommentController {
     public Comment saveComment(@RequestBody Comment comment, @PathVariable Long materialId) {
         Optional<Material> material = materialRepository.findById(materialId);
         Comment c = null;
-        if(material.isPresent()){
+        if (material.isPresent()) {
             c = commentRepository.save(comment);
             Material actualMaterial = material.get();
             Set<Comment> comments = actualMaterial.getComments();
@@ -45,6 +45,21 @@ public class CommentController {
 
     @DeleteMapping("/delete/{commentId}")
     public void deleteComment(@PathVariable Long commentId) {
-        commentRepository.deleteById(commentId);
+        deleteCommentRecursive(commentId);
+    }
+
+    private void deleteCommentRecursive(Long commentId) {
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        if (commentOptional.isPresent()) {
+            Comment comment = commentOptional.get();
+            for (Material m : materialRepository.findAll()) {
+                Set<Comment> comments = m.getComments();
+                comments.remove(comment);
+                m.setComments(comments);
+                materialRepository.save(m);
+            }
+            commentRepository.findAll().stream().filter(c -> comment.equals(c.getReplyTo())).forEach(child -> deleteCommentRecursive(child.getId()));
+            commentRepository.delete(comment);
+        }
     }
 }
