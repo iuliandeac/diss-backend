@@ -26,6 +26,6 @@ public class Material {
 
     String type;
 
-    @Lob
+    @Lob @Basic(fetch = FetchType.LAZY)
     byte[] data;
 }

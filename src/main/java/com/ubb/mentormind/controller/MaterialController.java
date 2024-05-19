@@ -2,12 +2,13 @@ package com.ubb.mentormind.controller;
 
 import com.ubb.mentormind.model.*;
 import com.ubb.mentormind.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,11 +30,22 @@ public class MaterialController {
     @Autowired
     CommentRepository commentRepository;
 
+    @Transactional
     @GetMapping("/{lectureId}")
     public Set<Material> findMaterials(@PathVariable Long lectureId) {
         return lectureRepository.findById(lectureId).map(Lecture::getMaterials).orElse(Collections.emptySet());
     }
 
+    @GetMapping("/data/{materialId}")
+    public ResponseEntity<?> getMaterialData(@PathVariable Long materialId) {
+        Material material = materialRepository.findById(materialId).orElse(null);
+        if (material == null) {
+            return ResponseEntity.ok().body("Material not found");
+        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(material.getData());
+    }
+
+    @Transactional
     @PostMapping("/save/{lectureId}")
     public Material saveMaterial(@PathVariable Long lectureId, @RequestBody Material material) {
         Optional<Lecture> lecture = lectureRepository.findById(lectureId);
