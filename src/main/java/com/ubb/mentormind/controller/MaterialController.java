@@ -1,5 +1,6 @@
 package com.ubb.mentormind.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ubb.mentormind.model.*;
 import com.ubb.mentormind.repository.*;
 import jakarta.transaction.Transactional;
@@ -7,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,27 @@ public class MaterialController {
             return ResponseEntity.ok().body("Material not found");
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(material.getData());
+    }
+
+    @PostMapping("/save-material/{lectureId}")
+    @Transactional
+    public Material saveMaterial(@PathVariable Long lectureId,
+                                 @RequestPart("material") String materialJson,
+                                 @RequestPart("file") MultipartFile file) throws IOException {
+        Material material = new ObjectMapper().readValue(materialJson, Material.class);
+        material.setData(file.getBytes());
+
+        Optional<Lecture> lecture = lectureRepository.findById(lectureId);
+        Material m = null;
+        if (lecture.isPresent()) {
+            m = materialRepository.save(material);
+            Lecture actualLecture = lecture.get();
+            Set<Material> materials = actualLecture.getMaterials();
+            materials.add(m);
+            actualLecture.setMaterials(materials);
+            lectureRepository.save(actualLecture);
+        }
+        return m;
     }
 
     @Transactional
