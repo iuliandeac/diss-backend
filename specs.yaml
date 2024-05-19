@@ -799,8 +799,12 @@ components:
           format: int64
           description: The system time when the file was last modified
         type:
-          enum: [text, pdf, video, jpeg]
+          type: string
           description: The type of material
+        data:
+          type: string
+          format: byte
+          description: The actual contents of the file
     Comment:
       type: object
       required: [ id ]

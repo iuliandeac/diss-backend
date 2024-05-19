@@ -25,4 +25,7 @@ public class Material {
     private Long id;
 
     String type;
+
+    @Lob
+    byte[] data;
 }
