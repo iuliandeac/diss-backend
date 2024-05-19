@@ -71,6 +71,7 @@ public class SubjectController {
     @PostMapping("/save")
     public Subject saveSubject(@RequestBody Subject subject) {
         subject.setJoinCode(generateJoinCode());
+        subject.setParticipants(Set.of(subject.getTeacher()));
         return subjectRepository.save(subject);
     }
 
