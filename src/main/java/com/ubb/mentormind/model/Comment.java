@@ -9,7 +9,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author")
     UserAccount author;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "replyTo")
     Comment replyTo;
     String content;
     Long timestamp = System.currentTimeMillis();
