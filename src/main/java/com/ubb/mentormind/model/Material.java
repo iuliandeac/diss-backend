@@ -1,5 +1,6 @@
 package com.ubb.mentormind.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,9 +24,9 @@ public class Material {
     @Id
     @GeneratedValue
     private Long id;
-
     String type;
-
-    @Lob @Basic(fetch = FetchType.LAZY)
-    byte[] data;
+    @MapsId
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "material")
+    FileContent fileContent;
 }

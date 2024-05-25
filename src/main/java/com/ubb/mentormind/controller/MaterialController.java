@@ -33,6 +33,9 @@ public class MaterialController {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    FileContentRepository fileContentRepository;
+
     @Transactional
     @GetMapping("/{lectureId}")
     public Set<Material> findMaterials(@PathVariable Long lectureId) {
@@ -41,10 +44,7 @@ public class MaterialController {
 
     @GetMapping("/data/{materialId}")
     public ResponseEntity<?> getMaterialData(@PathVariable Long materialId) {
-        Material material = materialRepository.findById(materialId).orElse(null);
-        if (material == null) {
-            return ResponseEntity.ok().body("Material not found");
-        }
+        FileContent material = fileContentRepository.findById(materialId).get();
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(material.getData());
     }
 
@@ -54,7 +54,13 @@ public class MaterialController {
                                  @RequestPart("material") String materialJson,
                                  @RequestPart("file") MultipartFile file) throws IOException {
         Material material = new ObjectMapper().readValue(materialJson, Material.class);
-        material.setData(file.getBytes());
+        FileContent fileContent = material.getFileContent();
+        if(fileContent == null)
+        {
+            fileContent = new FileContent();
+        }
+        fileContent.setData(file.getBytes());
+        material.setFileContent(fileContent);
 
         Optional<Lecture> lecture = lectureRepository.findById(lectureId);
         Material m = null;
