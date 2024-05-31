@@ -30,7 +30,7 @@ public class CommentController {
 
     @PostMapping("/save/{materialId}")
     public Comment saveComment(@RequestBody Comment comment, @PathVariable Long materialId) {
-        Optional<Material> material = materialRepository.findById(materialId);
+        Optional<Material> material = materialRepository.findAll().stream().filter(material1 -> material1.getId().equals(materialId)).findFirst();
         Comment c = null;
         if (material.isPresent()) {
             c = commentRepository.save(comment);
